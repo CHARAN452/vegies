@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wagner Cart - Grocery & Household Essentials</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2e7d32;
+            --secondary: #4caf50;
+            --accent: #ffeb3b;
+            --dark: #212121;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+        }
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .cart-icon {
+            position: relative;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent);
+            color: var(--dark);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .categories { background: #f5f5f5; padding: 2rem; }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .category-btn {
+            background: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .category-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .products { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .product-image {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            color: white;
+        }
+        .product-info { padding: 1rem; }
+        .product-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .product-price { font-size: 1.2rem; color: var(--primary); font-weight: bold; margin-bottom: 1rem; }
+        .product-actions { display: flex; gap: 0.5rem; }
+        .btn { flex: 1; padding: 0.6rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn-primary { background: var(--secondary); color: white; }
+        .btn-primary:hover { background: #45a049; }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .cart-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .close-cart {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        .total { font-size: 1.3rem; font-weight: bold; color: var(--primary); text-align: right; margin-top: 1rem; }
+        @media(max-width:768px) { .hero h1{ font-size:2rem; } header{ flex-direction: column; gap:1rem; text-align:center; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">🛒 Wagner Cart</div>
+        <div class="cart-icon" onclick="toggleCart()">🛍️ <span class="cart-count" id="cartCount">0</span></div>
+    </header>
+
+    <section class="hero">
+        <h1>Everything You Need</h1>
+        <p>Fresh groceries, household essentials & daily needs delivered fast</p>
+    </section>
+
+    <section class="categories">
+        <div class="category-grid">
+            <button class="category-btn" onclick="filterProducts('all')">All</button>
+            <button class="category-btn" onclick="filterProducts('grocery')">Groceries</button>
+            <button class="category-btn" onclick="filterProducts('household')">Household</button>
+            <button class="category-btn" onclick="filterProducts('personal')">Personal Care</button>
+            <button class="category-btn" onclick="filterProducts('fresh')">Fresh Produce</button>
+            <button class="category-btn" onclick="filterProducts('other')">Other</button>
+        </div>
+    </section>
+
+    <section class="products">
+        <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+            <h2>Your Cart</h2>
+            <div id="cartItems"></div>
+            <div class="total" id="cartTotal">Total: ₹0</div>
+            <button class="btn btn-primary" style="width:100%; margin-top:1rem;" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {id:1, name:'Rice (5kg)', price:250, category:'grocery', icon:'🍚'},
+            {id:2, name:'Wheat Flour (5kg)', price:180, category:'grocery', icon:'🌾'},
+            {id:3, name:'Cooking Oil (1L)', price:140, category:'grocery', icon:'🛢️'},
+            {id:4, name:'Sugar (5kg)', price:220, category:'grocery', icon:'🍚'},
+            {id:5, name:'Salt (1kg)', price:25, category:'grocery', icon:'🧂'},
+            {id:6, name:'Soap (75g)', price:25, category:'personal', icon:'🧼'},
+            {id:7, name:'Shampoo (200ml)', price:150, category:'personal', icon:'🧴'},
+            {id:8, name:'Detergent Powder (1kg)', price:120, category:'household', icon:'🧺'},
+            {id:9, name:'Eggs (6pcs)', price:45, category:'grocery', icon:'🥚'},
+            {id:10, name:'Potatoes (1kg)', price:35, category:'fresh', icon:'🥔'},
+            {id:11, name:'Onions (1kg)', price:45, category:'fresh', icon:'🧅'},
+            {id:12, name:'Tomatoes (1kg)', price:55, category:'fresh', icon:'🍅'}
+        ];
+
+        let cart = [];
+
+        function renderProducts(filter='all'){
+            const grid = document.getElementById('productGrid');
+            const filtered = filter==='all' ? products : products.filter(p => p.category===filter);
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card">
+                    <div class="product-image">${p.icon}</div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">₹${p.price}</div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart(${p.id})">Add</button>
+                            <button class="btn btn-outline" onclick="quickView(${p.id})">View</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id){
+            const product = products.find(p=>p.id===id);
+            const item = cart.find(c=>c.id===id);
+            if(item) item.quantity++;
+            else cart.push({...product, quantity:1});
+            updateCartCount();
+        }
+
+        function updateCartCount(){
+            const count = cart.reduce((sum,item)=>sum+item.quantity,0);
+            document.getElementById('cartCount').textContent=count;
+        }
+
+        function toggleCart(){
+            const modal = document.getElementById('cartModal');
+            modal.style.display = modal.style.display==='block'?'none':'block';
+            renderCart();
+        }
+
+        function renderCart(){
+            const container=document.getElementById('cartItems');
+            if(cart.length===0){ container.innerHTML='<p>Your cart is empty</p>'; document.getElementById('cartTotal').textContent='Total: ₹0'; return; }
+            container.innerHTML = cart.map(item=>`
+                <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                    <div><strong>${item.name}</strong><br>₹${item.price} x ${item.quantity}</div>
+                    <div>₹${(item.price*item.quantity).toFixed(2)} 
+                        <button onclick="removeFromCart(${item.id})" style="margin-left:5px; background:#f44336; color:white; border:none; border-radius:4px; cursor:pointer;">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+            const total = cart.reduce((sum,item)=>sum+item.price*item.quantity,0);
+            document.getElementById('cartTotal').textContent = `Total: ₹${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(id){ cart=cart.filter(i=>i.id!==id); updateCartCount(); renderCart(); }
+
+        function filterProducts(category){ renderProducts(category); }
+
+        function quickView(id){
+            const p = products.find(x=>x.id===id);
+            alert(`${p.name}\nPrice: ₹${p.price}\nCategory: ${p.category}`);
+        }
+
+        function checkout(){
+            if(cart.length===0){ alert('Cart is empty!'); return; }
+            alert('Order placed successfully!'); cart=[]; updateCartCount(); toggleCart();
+        }
+
+        renderProducts();
+        updateCartCount();
+    </script>
+</body>
+</html>
